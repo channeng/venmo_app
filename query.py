@@ -1,6 +1,6 @@
 import urllib, json
 
-key = "75d5e8fb7f47e2adcf71c9b86c5abd59327fe4fb88e4fd74e093b6d661115c07"
+key = ""
 # raw_input("What is your access token?")
 # 
 key_param = "access_token="+str(key)
@@ -22,13 +22,36 @@ print
 def transactions(domain,key_param):
 	url = domain + key_param
 	response = returnJson(url)
-	dump = returnData(response)
-	if len(dump) == 20:
-		next_page = pagination(response)
-		domain = next_page+"&"
-		dump.append(transactions(domain,key_param))
+	data = returnData(response)
+	next_page_url = pagination(response)
+	dump = [data,next_page_url]
+	return dump
+
+def all_transactions(domain,key_param):
+	all_data = []
+	page_counter = 1
+	response = transactions(domain,key_param)
+	response_data = response[0]
+	response_nxtpg = response[1]+"&"
+	for i in response_data:
+		all_data.append(i)
+	print str(page_counter) + "..."
+
+	while len(response_data) == 20:
+		page_counter += 1
+		print str(page_counter) + "..."
+		response = transactions(response_nxtpg,key_param)
+		response_data = response[0]
+		for i in response_data:
+			all_data.append(i)
+		try:
+			response_nxtpg = response[1]+"&"
+		except TypeError:
+			break
 	else:
+		print "dumped!"
 		return dump
 
-print len(transactions(url))
+	return all_data
+
 # print 
