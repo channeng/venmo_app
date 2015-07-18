@@ -6,8 +6,7 @@ key = "75d5e8fb7f47e2adcf71c9b86c5abd59327fe4fb88e4fd74e093b6d661115c07"
 key_param = "access_token="+str(key)
 domain = "https://api.venmo.com/v1/payments?"
 
-def returnJson(domain,key_param):
-	url = domain+key_param
+def returnJson(url):
 	response = urllib.urlopen(url)
 	data = json.loads(response.read())
 	return data
@@ -15,10 +14,21 @@ def returnJson(domain,key_param):
 def returnData(returnJson_object):
 	return returnJson_object["data"]
 
-def pagination(returnJson_object,key_param):
-	url = returnJson_object["pagination"]["next"]+"&"+key_param
+def pagination(returnJson_object):
+	url = returnJson_object["pagination"]["next"]
 	return url
 print
-print len(returnData(returnJson(domain,key_param)))
 
+def transactions(domain,key_param):
+	url = domain + key_param
+	response = returnJson(url)
+	dump = returnData(response)
+	if len(dump) == 20:
+		next_page = pagination(response)
+		domain = next_page+"&"
+		dump.append(transactions(domain,key_param))
+	else:
+		return dump
+
+print len(transactions(url))
 # print 
