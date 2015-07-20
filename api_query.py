@@ -1,8 +1,8 @@
-import urllib, json
+import urllib, json, os
 
-key = ""
+key = os.environ['VENMO_TOKEN']
 # raw_input("What is your access token?")
-# 
+
 key_param = "access_token="+str(key)
 domain = "https://api.venmo.com/v1/payments?"
 
@@ -54,4 +54,16 @@ def all_transactions(domain,key_param):
 
 	return all_data
 
-# print 
+def user_data(key_param):
+	url = "https://api.venmo.com/v1/me?"+key_param
+	response = urllib.urlopen(url)
+	data = json.loads(response.read())
+	user_data = data["data"]
+	return user_data
+
+dood = all_transactions(domain,key_param)
+for i in range(10):
+	print dood[i]
+
+#Useful info: user_profile(key_param)[balance],user_profile(key_param)["user"]
+
